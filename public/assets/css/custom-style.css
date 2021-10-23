@@ -1,0 +1,34 @@
+/*your custom css goes here*/
+.aiz-p-hov-icon a:nth-child(2) {
+    display:none !important;
+}
+
+.resendOtp{cursor: pointer;padding: 5px;color: #0faeaa !important;border: 1px solid #0faeaa;border-radius: 3px !important;}
+.otp_form .otp_msg{margin-bottom: 15px !important;font-size: 14px !important;}
+
+.aiz-card-box {
+    border: solid 1px #ddd;
+}
+
+.aiz-card-box:hover {
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1),0 4px 6px -2px rgba(0,0,0,0.05);
+}
+
+.aiz-p-hov-icon a:first-child:hover {
+    background: #f00;
+}
+
+.container {
+    max-width: 90% !important;
+}
+
+label.btn.btn-outline-dark{width: 70px;}
+label.btn.btn-outline-dark:hover,label.btn.btn-outline-dark:focus{background:#0faeaa !important;color: #fff;border: 1px solid #0faeaa;}
+.btn-check:checked~label.btn.btn-outline-dark.rounded-pill:hover{
+    color:#fff;
+    
+}
+.btn-check:checked~label.btn.btn-outline-dark.rounded-pill{
+    border: 1px solid #0faeaa;
+    color:#0faeaa
+}

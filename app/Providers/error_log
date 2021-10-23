@@ -1,0 +1,4 @@
+[06-Aug-2021 13:36:04 America/Chicago] PHP Fatal error:  Uncaught Error: Class 'Illuminate\Foundation\Support\Providers\RouteServiceProvider' not found in /home2/yellacart/demo.yellacart.com/app/Providers/RouteServiceProvider.php:8
+Stack trace:
+#0 {main}
+  thrown in /home2/yellacart/demo.yellacart.com/app/Providers/RouteServiceProvider.php on line 8
