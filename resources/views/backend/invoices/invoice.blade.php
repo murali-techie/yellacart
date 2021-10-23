@@ -16,7 +16,7 @@
             direction: <?php echo  $direction ?>;
             text-align: <?php echo  $text_align ?>;
 			padding:0;
-			margin:0; 
+			margin:0;
 		}
 		.gry-color *,
 		.gry-color{
@@ -173,13 +173,21 @@
 							        <!--    <th class="gry-color text-left">{{ translate('Total Tax') }}</th>-->
 							        <!--    <td class="currency">{{ single_price($order->orderDetails->sum('tax')) }}</td>-->
 							        <!--</tr>-->
+									@if($order->wallet_discount)
+									<tr>
+										<th class="gry-color text-left">Discount (5% for Wallet payment)</th>
+										<td class="currency">
+											{{ single_price($order->wallet_discount) }}
+										</td>
+									</tr>
+									@endif
 				                    <tr class="border-bottom">
 							            <th class="gry-color text-left">{{ translate('Coupon Discount') }}</th>
 							            <td class="currency">{{ single_price($order->coupon_discount) }}</td>
 							        </tr>
 							        <tr>
 							            <th class="text-left strong">{{ translate('Grand Total') }}</th>
-							            <td class="currency">{{ single_price($order->orderDetails->sum('price') + $order->orderDetails->sum('tax') + $order->orderDetails->sum('shipping_cost')) }}</td>
+							            <td class="currency">{{ single_price($order->grand_total) }}</td>
 							        </tr>
 						        </tbody>
 						    </table>

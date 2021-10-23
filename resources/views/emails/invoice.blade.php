@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Yellacart</title>
+    <title>Laravel</title>
     <meta http-equiv="Content-Type" content="text/html;"/>
     <meta charset="UTF-8">
 	<style media="all">
@@ -53,9 +53,7 @@
 		.small{
 			font-size: .85rem;
 		}
-		.currency{
-
-		}
+		.btn-dark{padding:8px 10px;font-size:13px;background: #000;color: #fff !important;text-decoration: none;}
 	</style>
 </head>
 <body>
@@ -73,6 +71,7 @@
 							<img loading="lazy"  src="{{ static_asset('assets/img/logo.png') }}" height="40" style="display:inline-block;">
 						@endif
 					</td>
+					<td style="font-size: 2rem;" class="strong text-right">INVOICE</td>
 				</tr>
 			</table>
 			<table>
@@ -93,8 +92,7 @@
 					<td class="text-right small"><span class="gry-color small">{{  translate('Order Date') }}:</span> <span class=" strong">{{ date('d-m-Y', $order->date) }}</span></td>
 				</tr>
 				<tr>
-					<td class="gry-color small">{{  translate('GST No') }}: 27AABCY325BIZO</td>
-					<td></td>
+				    <td class="gry-color small">GST number 27AABCY325B1ZO</td>
 				</tr>
 			</table>
 
@@ -117,12 +115,12 @@
 			<table class="padding text-left small border-bottom">
 				<thead>
 	                <tr class="gry-color" style="background: #eceff4;">
-	                    <th width="30%">{{ translate('Product Name') }}</th>
+	                    <th width="35%">{{ translate('Product Name') }}</th>
 						<th width="15%">{{ translate('Delivery Type') }}</th>
 	                    <th width="10%">{{ translate('Qty') }}</th>
 	                    <th width="15%">{{ translate('Unit Price') }}</th>
 	                    <th width="10%">{{ translate('Tax') }}</th>
-	                    <th width="15%">{{ translate('Tax Amount') }}</th>
+						<th width="10%">TAX Amount</th>
 	                    <th width="15%" class="text-right">{{ translate('Total') }}</th>
 	                </tr>
 				</thead>
@@ -142,7 +140,7 @@
 								</td>
 								<td class="gry-color">{{ $orderDetail->quantity }}</td>
 								<td class="gry-color currency">{{ single_price($orderDetail->price/$orderDetail->quantity) }}</td>
-								<td class="gry-color currency">{{ $orderDetail->price+$orderDetail->tax <= 1049 ? '5%' : '12%' }}</td>
+								<td class="gry-color currency">{{ round((($orderDetail->tax/$orderDetail->quantity)*100)/($orderDetail->price/$orderDetail->quantity),2) }} %</td>
 								<td class="gry-color currency">{{ single_price($orderDetail->tax/$orderDetail->quantity) }}</td>
 			                    <td class="text-right currency">{{ single_price($orderDetail->price+$orderDetail->tax) }}</td>
 							</tr>
@@ -157,28 +155,33 @@
 		        <tbody>
 			        <tr>
 			            <th class="gry-color text-left">{{ translate('Sub Total') }}</th>
-			            <td class="currency">{{ single_price($order->orderDetails->sum('price') +  + $order->orderDetails->sum('tax')) }}</td>
+			            <td class="currency">{{ single_price(($order->orderDetails->sum('price'))+($orderDetail->tax/$orderDetail->quantity)) }}</td>
 			        </tr>
 			        <tr>
 			            <th class="gry-color text-left">{{ translate('Shipping Cost') }}</th>
 			            <td class="currency">{{ single_price($order->orderDetails->sum('shipping_cost')) }}</td>
 			        </tr>
-			        <!--<tr class="border-bottom">-->
-			        <!--    <th class="gry-color text-left">{{ translate('Total Tax') }}</th>-->
-			        <!--    <td class="currency">{{ single_price($order->orderDetails->sum('tax')) }}</td>-->
-			        <!--</tr>-->
+					@if($order->wallet_discount)
+					<tr>
+						<th class="gry-color text-left">Discount (5% for Wallet Payment)</th>
+						<td class="currency">
+							{{ single_price($order->wallet_discount) }}
+						</td>
+					</tr>
+					@endif
                     <tr class="border-bottom">
-			            <th class="gry-color text-left">{{ translate('Coupon') }}</th>
+			            <th class="gry-color text-left">Coupon Discount</th>
 			            <td class="currency">{{ single_price($order->coupon_discount) }}</td>
 			        </tr>
 			        <tr>
 			            <th class="text-left strong">{{ translate('Grand Total') }}</th>
-			            <td class="currency">{{ single_price($order->orderDetails->sum('price') + $order->orderDetails->sum('tax') + $order->orderDetails->sum('shipping_cost')) }}</td>
+			            <td class="currency">{{ single_price($order->grand_total) }}</td>
 			        </tr>
 		        </tbody>
 		    </table>
 	    </div>
 
 	</div>
+    <div style="text-align: center;font-size:14px;margin-top:20px">If you have any questions, contact us at support@yellacart.com </div>
 </body>
 </html>

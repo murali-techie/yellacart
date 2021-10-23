@@ -194,6 +194,14 @@
                             {{ single_price($order->orderDetails->sum('shipping_cost')) }}
                         </td>
                     </tr>
+                    @if($order->wallet_discount)
+                    <tr>
+                        <td><strong class="text-muted">Discount :</strong></td>
+                        <td>
+                            <span class="text-muted">{{ single_price($order->wallet_discount) }}</span>
+                        </td>
+                    </tr>
+                    @endif
                     <tr>
                         <td>
                             <strong class="text-muted">{{translate('Coupon')}} :</strong>

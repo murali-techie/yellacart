@@ -292,7 +292,7 @@ class OrderController extends Controller
         $carts = Cart::where('user_id', Auth::user()->id)
             ->where('owner_id', $request->owner_id)
             ->get();
-            
+
         $request->session()->put('cart', $carts);
 
         if ($carts->isEmpty()) {
@@ -320,6 +320,7 @@ class OrderController extends Controller
             $subtotal = 0;
             $tax = 0;
             $shipping = 0;
+            $discount_pay = 0;
 
             //calculate shipping is to get shipping costs of different types
             $admin_products = array();
@@ -342,6 +343,7 @@ class OrderController extends Controller
 
                 $subtotal += $cartItem['price'] * $cartItem['quantity'];
                 $tax += $cartItem['tax'] * $cartItem['quantity'];
+                $discount_pay += (($subtotal*5)/100);
 
                 $product_variation = $cartItem['variation'];
 
@@ -409,11 +411,15 @@ class OrderController extends Controller
                 $coupon_usage->coupon_id = Coupon::where('code', $carts->first()->coupon_code)->first()->id;
                 $coupon_usage->save();
             }
+            if($request->payment_option == 'yellawallet'){
+                $order->grand_total -= $discount_pay;
+                $order->wallet_discount = $discount_pay;
+            }
 
             $order->save();
 
 
-            
+
             if ($request->payment_option == 'cash_on_delivery') {
                 foreach ($order->orderDetails as $orderDetail) {
                     $rocket = new ShipRocket($orderDetail);
@@ -459,6 +465,10 @@ class OrderController extends Controller
                 send_firebase_notification($request);
             }
 
+            $array['view'] = 'emails.invoice';
+                $array['subject'] = translate('Order Placed!. Order code') . ' - ' . $order->code;
+                $array['from'] = env('MAIL_FROM_ADDRESS');
+                $array['order'] = $order;
             //sends email to customer with the invoice pdf attached
             if (env('MAIL_USERNAME') != null) {
                 try {

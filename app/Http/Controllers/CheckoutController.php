@@ -38,12 +38,12 @@ class CheckoutController extends Controller
     public function checkout(Request $request)
     {
         if ($request->payment_option != null) {
-            
+
              if (in_array($request->payment_option, ['netbanking', 'upi', 'card', 'wallet'])) {
                 $request->session()->put('razorpay_payment_method', $request->payment_option);
                 $request->merge(['payment_option' => 'razorpay']);
             }
-            
+
             $orderController = new OrderController;
             $orderController->store($request);
 
@@ -135,7 +135,7 @@ class CheckoutController extends Controller
 
                     flash(translate("Your order has been placed successfully"))->success();
                     return redirect()->route('order_confirmed');
-                } elseif ($request->payment_option == 'wallet') {
+                } elseif ($request->payment_option == 'yellawallet') {
                     $user = Auth::user();
                     $order = Order::findOrFail($request->session()->get('order_id'));
                     if ($user->balance >= $order->grand_total) {
@@ -147,9 +147,9 @@ class CheckoutController extends Controller
                     $order = Order::findOrFail($request->session()->get('order_id'));
                     $order->manual_payment = 1;
                     $order->save();
-                   
+
                     $request->session()->forget('club_point');
-                    
+
                     flash(translate('Your order has been placed successfully. Please submit payment information from purchase history'))->success();
                     return redirect()->route('order_confirmed');
                 }
@@ -167,7 +167,7 @@ class CheckoutController extends Controller
         $order->payment_status = 'paid';
         $order->payment_details = $payment;
         $order->save();
-        
+
         foreach ($order->orderDetails as $order) {
             $rocket = new ShipRocket($order);
             $rocket->createOrder();
@@ -250,7 +250,7 @@ class CheckoutController extends Controller
         Session::forget('club_point');
 
 
-        flash(translate('Payment completed'))->success();
+        flash(translate('Payment completed'))->success()
         return view('frontend.order_confirmed', compact('order'));
     }
 
@@ -288,7 +288,7 @@ class CheckoutController extends Controller
             flash(translate('Your cart is empty'))->warning();
             return redirect()->route('home');
         }
-        
+
         $shipping_info = Address::where('id', $carts[0]['address_id'])->first();
         $total = 0;
         $tax = 0;
@@ -340,7 +340,8 @@ class CheckoutController extends Controller
 
             }
             $total = $subtotal + $tax + $shipping;
-            return view('frontend.payment_select', compact('carts', 'shipping_info', 'total'));
+            $stotal = $subtotal + $tax;
+            return view('frontend.payment_select', compact('carts', 'shipping_info', 'total', 'stotal', 'shipping'));
 
         } else {
             flash(translate('Your Cart was empty'))->warning();
@@ -356,12 +357,12 @@ class CheckoutController extends Controller
         $carts = Cart::where('user_id', Auth::user()->id)
                 ->where('owner_id', $request->owner_id)
                 ->get();
-        
+
         if($carts->isEmpty()) {
             flash(translate('Your cart is empty'))->warning();
             return redirect()->route('home');
         }
-        
+
         $shipping_info = Address::where('id', $carts[0]['address_id'])->first();
         $total = 0;
         $tax = 0;

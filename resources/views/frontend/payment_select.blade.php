@@ -48,7 +48,7 @@
                 <form action="{{ route('payment.checkout') }}" class="form-default" role="form" method="POST" id="checkout-form">
                     @csrf
                     <input type="hidden" name="owner_id" value="{{ $carts[0]['owner_id'] }}">
-                    
+
                     @if (Auth::check() && get_setting('wallet_system') == 1)
                             <div class="text-center py-2">
                                 <div style="width: 150px;" class="pt-2 mx-auto">
@@ -58,18 +58,19 @@
                                     <span class="opacity-80">{{ translate('Yella wallet balance :')}}</span>
                                     <span class="fw-600">{{ single_price(Auth::user()->balance) }}</span>
                                 </div>
-                                @if(Auth::user()->balance < $total)
-                                    <button type="button" class="btn btn-secondary" disabled>
-                                        {{ translate('Insufficient balance')}}
-                                    </button>
-                                    <a role="button" href="{{ route('wallet.index') }}" class="btn btn-primary fw-600">
-                                        {{ translate('Recharge Wallet')}}
-                                    </a>
-                                @else
-                                    <button type="button" onclick="use_wallet()" class="btn btn-primary fw-600">
-                                        {{ translate('Pay with wallet')}}
-                                    </button>
-                                @endif
+                                    <div id="lowBalance" style="display: none;">
+                                        <button type="button" class="btn btn-secondary" disabled>
+                                            {{ translate('Insufficient balance')}}
+                                        </button>
+                                        <a role="button" href="{{ route('wallet.index') }}" class="btn btn-primary fw-600">
+                                            {{ translate('Recharge Wallet')}}
+                                        </a>
+                                    </div>
+                                    <div id="goodBalance" style="display: block;">
+                                        <button type="button" onclick="use_wallet()" class="btn btn-primary fw-600" >
+                                            {{ translate('Pay with wallet')}}
+                                        </button>
+                                    </div>
                             </div>
                             <div class="separator my-4">
                                     <span class="bg-white px-3">
@@ -575,7 +576,6 @@
             </div>
 
             <div class="col-lg-4 mt-4 mt-lg-0" id="cart_summary">
-                <!--@include('frontend.partials.cart_summary')-->
             </div>
         </div>
     </div>
@@ -608,7 +608,7 @@
         });
 
         function use_wallet(){
-            $('input[name=payment_option]').val('wallet');
+            $('input[name=payment_option]').val('yellawallet');
             if($('#agree_checkbox').is(":checked")){
                 $('#checkout-form').submit();
             }else{
@@ -671,9 +671,10 @@
                 }
             })
         })
-        
+
         function loadCartSummary(data) {
             $("#cart_summary").html('<div class="dot-loader"><div></div><div></div><div></div></div>');
+            console.log(data)
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -683,8 +684,23 @@
                 data: data,
                 success: function (data, textStatus, jqXHR) {
                     $("#cart_summary").html(data);
+                    loadBalance()
                 }
             })
+        }
+
+        function loadBalance(){
+            var tax = document.querySelectorAll('.cart-shipping .font-italic')[1].innerHTML.split('.')[1]
+            var balance = {{Auth::user()->balance}}
+            var total = {{$stotal}}+parseInt(tax);
+            console.log(total)
+            if(total>balance){
+                document.getElementById('lowBalance').style.display = "block"
+                document.getElementById('goodBalance').style.display = "none"
+            }else{
+                document.getElementById('lowBalance').style.display = "none"
+                document.getElementById('goodBalance').style.display = "block"
+            }
         }
     </script>
 @endsection

@@ -87,7 +87,7 @@
                             <td class="w-50 fw-600">{{ translate('Payment method')}}:</td>
                             <td>{{ ucfirst(str_replace('_', ' ', $order->payment_type)) }}</td>
                         </tr>
-                        
+
                         @if(get_setting('proxypay') == 1 && !$order->proxy_cart_reference_id->isEmpty())
                             <tr>
                                 <td class="w-50 fw-600">{{ translate('Proxypay Reference')}}:</td>
@@ -154,11 +154,11 @@
                                             $today_date = Carbon\Carbon::now();
                                         @endphp
                                         <td>
-                                            @if ($orderDetail->product != null && 
-                                            $orderDetail->product->refundable != 0 && 
-                                            $orderDetail->refund_request == null && 
-                                            $today_date <= $last_refund_date && 
-                                            $orderDetail->payment_status == 'paid' && 
+                                            @if ($orderDetail->product != null &&
+                                            $orderDetail->product->refundable != 0 &&
+                                            $orderDetail->refund_request == null &&
+                                            $today_date <= $last_refund_date &&
+                                            $orderDetail->payment_status == 'paid' &&
                                             $orderDetail->delivery_status == 'delivered')
                                                 <a href="{{route('refund_request_send_page', $orderDetail->id)}}" class="btn btn-primary btn-sm">{{  translate('Send') }}</a>
                                             @elseif ($orderDetail->refund_request != null && $orderDetail->refund_request->refund_status == 0)
@@ -207,6 +207,14 @@
                                     <span class="text-italic">{{ single_price($order->orderDetails->sum('tax')) }}</span>
                                 </td>
                             </tr>
+                            @if($order->wallet_discount)
+                            <tr>
+                                <td class="w-50 fw-600">Discount</td>
+                                <td class="text-right">
+                                    <span class="text-italic">{{ single_price($order->wallet_discount) }}</span>
+                                </td>
+                            </tr>
+                            @endif
                             <tr>
                                 <td class="w-50 fw-600">{{ translate('Coupon')}}</td>
                                 <td class="text-right">

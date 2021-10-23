@@ -188,6 +188,14 @@
                                                         <span class="font-italic">{{ single_price($order->coupon_discount) }}</span>
                                                     </td>
                                                 </tr>
+                                                @if($order->wallet_discount)
+                                                <tr>
+                                                    <th>Discount <br> (5% for Wallet Payment)</th>
+                                                    <td class="text-right">
+                                                        <span class="font-italic">{{ single_price($order->wallet_discount) }}</span>
+                                                    </td>
+                                                </tr>
+                                                @endif
                                                 <tr>
                                                     <th><span class="fw-600">{{ translate('Total')}}</span></th>
                                                     <td class="text-right">
